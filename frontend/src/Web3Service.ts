@@ -30,15 +30,16 @@ export async function doLogin(): Promise<LoginResult> {
     throw new Error('No account allowed!');
   }
 
+  const account = accounts[0];
   const contract = getContract(web3)
   const ownerAddress: string = await contract.methods.owner().call();
-  const isAdmin = accounts[0] === ownerAddress;
+  const isAdmin = account === ownerAddress;
 
-  localStorage.setItem("account", accounts[0]);
+  localStorage.setItem("account", account);
   localStorage.setItem("isAdmin", `${isAdmin}`);
 
   return {
-    account: accounts[0],
+    account,
     isAdmin
   } as LoginResult
 }
@@ -46,4 +47,10 @@ export async function doLogin(): Promise<LoginResult> {
 export function doLogout() {
   localStorage.removeItem("account");
   localStorage.removeItem("isAdmin");
+}
+
+export type Dashboard = {
+  bid?: string,
+  commission?: number,
+  address?: string
 }
