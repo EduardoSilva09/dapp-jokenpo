@@ -42,3 +42,8 @@ export async function doLogin(): Promise<LoginResult> {
     isAdmin
   } as LoginResult
 }
+
+export function doLogout() {
+  localStorage.removeItem("account");
+  localStorage.removeItem("isAdmin");
+}

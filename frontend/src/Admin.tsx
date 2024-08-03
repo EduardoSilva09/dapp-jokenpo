@@ -1,7 +1,12 @@
+import Header from "./Header";
+
 function Admin() {
   return (
-    <div >
-      Admin page
+    <div className="container">
+      <Header />
+      <main>
+        Admin page
+      </main>
     </div>
   );
 }
