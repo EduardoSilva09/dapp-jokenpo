@@ -121,3 +121,15 @@ export async function getLeaderboard(): Promise<Leaderboard> {
   const result = await contract.methods.getResult().call();
   return { players, result } as Leaderboard
 }
+export async function getBestPlayers(): Promise<Leaderboard> {
+  const contract = getContract();
+  return contract.methods.getLeaderboard().call();
+}
+
+export async function listenEvent(callback: Function) {
+  const web3 = new Web3(`${process.env.REACT_APP_WEBSOCKET_SERVER}`)
+  const contract = getContract(web3);
+  contract.events.Played({
+    fromBlock: "latest"
+  }).on("data", (event: any) => callback(event.returnValues.result))// result is the property defined in the Played smart contract event
+}

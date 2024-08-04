@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
-import { getLeaderboard, getResult, Leaderboard, Options, play } from "./Web3Service";
+import { getBestPlayers, getLeaderboard, Leaderboard, listenEvent, Options, play } from "./Web3Service";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -9,14 +9,18 @@ function App() {
   useEffect(() => {
     getLeaderboard()
       .then(leaderboard => setLeaderboard(leaderboard))
-      .catch(err => setMessage(err.message))
+      .catch(err => setMessage(err.message));
+
+    listenEvent((result: string) => {
+      getBestPlayers()
+        .then(players => setLeaderboard({ players, result } as Leaderboard))
+        .catch(err => setMessage(err.message));
+    })
   }, [])
 
   function onPlay(option: Options) {
     setLeaderboard({ ...leaderboard, result: "Sendind your choice..." });
     play(option)
-      .then(tx => getResult())
-      .then(result => setLeaderboard({ ...leaderboard, result }))
       .catch(err => setMessage(err.message));
   }
 
@@ -32,7 +36,26 @@ function App() {
         </div>
         <div className="col-md-8 col-lg-12">
           <div className="row">
-            <div className="col-sm-6"></div>
+            <div className="col-sm-6">
+              <h4 className="mb-3">Best Players</h4>
+              <div className="card card-body body-0 shadow table-wrapper table-responsive">
+                <table className="table table-hover">
+                  <thead>
+                    <tr>
+                      <th className="border-gray-200">Player</th>
+                      <th className="border-gray-200">Wins</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      leaderboard && leaderboard.players && leaderboard.players.length
+                        ? leaderboard.players.map(p => (<tr key={p.wallet}><td>{p.wallet}</td><td>{`${p.wins}`}</td> </tr>))
+                        : <tr><td colSpan={2}>Loading...</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
             <div className="col-sm-6">
               <h4 className="mb-3">Games</h4>
               <div className="card card-body body-0 shadow">
