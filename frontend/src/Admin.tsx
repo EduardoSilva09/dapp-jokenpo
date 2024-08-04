@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
-import { Dashboard } from './Web3Service'
+import { Dashboard, getDashboard, upgrade } from './Web3Service'
 
 function Admin() {
 
   const [message, setMessage] = useState("")
   const [dashboard, setDashboard] = useState<Dashboard>({})
+  useEffect(() => {
+    getDashboard()
+      .then(dashboard => setDashboard(dashboard)
+      )
+      .catch(err => setMessage(err.message));
+  }, [])
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setDashboard(
@@ -13,9 +19,32 @@ function Admin() {
     )
   }
 
-  function onUpgradeClick() { }
-  function onChangeBidClick() { }
-  function onChangeCommissionClick() { }
+  function onUpgradeClick() {
+    if (!dashboard?.address)
+      return setMessage('Address is required!');
+
+    upgrade(dashboard?.address)
+      .then(tx => setMessage(`Success. Tx: ${tx}`))
+      .catch(err => setMessage(err))
+  }
+
+  function onChangeBidClick() {
+    if (!dashboard?.bid)
+      return setMessage('Bid is required!');
+
+    upgrade(dashboard?.bid)
+      .then(tx => setMessage(`Success. Tx: ${tx}`))
+      .catch(err => setMessage(err))
+  }
+
+  function onChangeCommissionClick() {
+    if (!dashboard?.commission)
+      return setMessage('Commission is required!');
+
+    upgrade(dashboard?.commission)
+      .then(tx => setMessage(`Success. Tx: ${tx}`))
+      .catch(err => setMessage(err))
+  }
 
   return (
     <div className="container">
